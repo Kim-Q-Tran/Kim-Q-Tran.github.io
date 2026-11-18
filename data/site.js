@@ -22,9 +22,9 @@ window.SITE = {
   giscus: {
     enabled: false,
     repo: "Kim-Q-Tran/Kim-Q-Tran.github.io",
-    repoId: "",
+    repoId: "R_kgDOVzE1og",
     category: "General",
-    categoryId: ""
+    categoryId: "DIC_kwDOVzE1os4DLbJS"
   },
 
   // Google Scholar snapshot (update these numbers by hand when you like).
