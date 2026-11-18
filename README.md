@@ -53,13 +53,19 @@ each paper in `data/publications.js`.
 2. In `index.html` delete the `<meta name="robots" content="noindex, nofollow">` line.
 3. Fill in the venue of the conference paper "Elastoplastic bending behaviors of
    steel plates…" (`conf-elastoplastic`). Google Scholar has the wrong venue for it.
-4. Make the GitHub repository public, then turn on Pages:
-   **Settings → Pages → Build and deployment → Deploy from a branch → `main` / root**.
-   The site is then live at `https://kim-q-tran.github.io/`.
+4. Go live. The draft lives in the **private** repo `Kim-Q-Tran/website` on purpose:
+   a repo named `Kim-Q-Tran.github.io` publishes itself as soon as it has content
+   (even when private on your plan), and GitHub won't let you switch that off.
+   When you are ready:
 
-Note: GitHub Pages only serves private repositories on paid plans, and even then
-the published site is public. Keep the repository private (with Pages off) until
-you are happy with the content.
+   ```bash
+   gh repo rename Kim-Q-Tran.github.io -R Kim-Q-Tran/website --yes
+   gh repo edit Kim-Q-Tran/Kim-Q-Tran.github.io --visibility public --accept-visibility-change-consequences
+   git remote set-url origin https://github.com/Kim-Q-Tran/Kim-Q-Tran.github.io.git
+   ```
+
+   If it does not publish by itself, open **Settings → Pages → Deploy from a
+   branch → `main` / root**. The site is then live at `https://kim-q-tran.github.io/`.
 
 ## Sharing accepted manuscripts
 
