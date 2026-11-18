@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kim Q. Tran</title>
+  <meta name="description" content="Kim Q. Tran — Ph.D. candidate at Ghent University working on bio-inspired materials, computational mechanics and scientific machine learning.">
+  <meta name="robots" content="noindex, nofollow"><!-- remove this line when the site goes public -->
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script>
+    // Apply the saved theme before first paint (no flash).
+    try { var t = localStorage.getItem("theme"); if (t) document.documentElement.setAttribute("data-theme", t); } catch (e) {}
+  </script>
+</head>
+<body>
+
+<!-- Icon sprite (inline so the page works offline) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-mail" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></symbol>
+    <symbol id="i-cap" viewBox="0 0 24 24"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></symbol>
+    <symbol id="i-orcid" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8.5 8v8M12 8h1.6a4 4 0 0 1 0 8H12z"/><circle cx="8.5" cy="5.6" r=".4"/></symbol>
+    <symbol id="i-github" viewBox="0 0 24 24"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></symbol>
+    <symbol id="i-rg" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M7.5 16V8h2.2a2 2 0 0 1 0 4H7.5m2.2 0 1.8 4M17 10a2 2 0 0 0-3.5 1.3v1.4A2 2 0 0 0 17 14v-1.2h-1.4"/></symbol>
+    <symbol id="i-linkedin" viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></symbol>
+    <symbol id="i-book" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></symbol>
+    <symbol id="i-scopus" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></symbol>
+    <symbol id="i-building" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4M8 6h.01M12 6h.01M16 6h.01M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h.01"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4M16 13H8M16 17H8M10 9H8"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></symbol>
+    <symbol id="i-code" viewBox="0 0 24 24"><path d="m16 18 6-6-6-6M8 6l-6 6 6 6"/></symbol>
+    <symbol id="i-data" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/></symbol>
+    <symbol id="i-quote" viewBox="0 0 24 24"><path d="M7 7h4v4c0 3-1.5 5-4 6M15 7h4v4c0 3-1.5 5-4 6"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m17 8-5-5-5 5M12 3v12"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></symbol>
+    <symbol id="i-unlock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M7 17 17 7M7 7h10v10"/></symbol>
+    <symbol id="i-award" viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M15.48 12.89 17 22l-5-3-5 3 1.52-9.11"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="14" height="14" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  </defs>
+</svg>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="#about">Kim Q. Tran</a>
+    <nav class="nav" aria-label="Sections">
+      <a href="#about">About</a>
+      <a href="#news">News</a>
+      <a href="#publications">Publications</a>
+      <a href="#code">Code</a>
+      <a href="#experience">Experience</a>
+      <a href="#education">Education</a>
+      <a href="#service">Service</a>
+    </nav>
+    <button class="theme-toggle" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">
+      <svg class="ico ico-sun"><use href="#i-sun"/></svg>
+      <svg class="ico ico-moon"><use href="#i-moon"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="layout">
+
+  <!-- ============ PROFILE SIDEBAR ============ -->
+  <aside class="profile" aria-label="Profile">
+    <div class="profile-card">
+      <img class="avatar" src="assets/img/profile.jpg" alt="Portrait of Kim Q. Tran" width="160" height="160">
+      <div class="profile-id">
+        <h2 class="profile-name">Kim Q. Tran</h2>
+        <p class="profile-role">Ph.D. Candidate · Computational Mechanics &amp; AI</p>
+      </div>
+      <ul class="profile-meta">
+        <li><svg class="ico"><use href="#i-building"/></svg><span>Soete Laboratory, Ghent University</span></li>
+        <li><svg class="ico"><use href="#i-building"/></svg><span>CAIR, VinUniversity</span></li>
+        <li><svg class="ico"><use href="#i-pin"/></svg><span>Belgium &amp; Vietnam</span></li>
+      </ul>
+      <ul class="profile-links">
+        <li><a href="mailto:kim.tran@ugent.be"><svg class="ico"><use href="#i-mail"/></svg>Email</a></li>
+        <li><a href="https://scholar.google.com/citations?user=RnIIxAIAAAAJ&amp;hl=en" target="_blank" rel="noopener"><svg class="ico"><use href="#i-cap"/></svg>Google Scholar</a></li>
+        <li><a href="https://orcid.org/0000-0003-0924-9235" target="_blank" rel="noopener"><svg class="ico"><use href="#i-orcid"/></svg>ORCID</a></li>
+        <li><a href="https://github.com/Kim-Q-Tran" target="_blank" rel="noopener"><svg class="ico"><use href="#i-github"/></svg>GitHub</a></li>
+        <li><a href="https://www.researchgate.net/profile/Kim-Q-Tran" target="_blank" rel="noopener"><svg class="ico"><use href="#i-rg"/></svg>ResearchGate</a></li>
+        <li><a href="https://www.linkedin.com/in/kim-q-tran" target="_blank" rel="noopener"><svg class="ico"><use href="#i-linkedin"/></svg>LinkedIn</a></li>
+        <li><a href="https://www.webofscience.com/wos/author/record/GQB-2945-2022" target="_blank" rel="noopener"><svg class="ico"><use href="#i-book"/></svg>Web of Science</a></li>
+        <li><a href="https://www.scopus.com/authid/detail.uri?authorId=58166176400" target="_blank" rel="noopener"><svg class="ico"><use href="#i-scopus"/></svg>Scopus</a></li>
+      </ul>
+    </div>
+  </aside>
+
+  <main id="main">
+
+    <!-- ============ ABOUT ============ -->
+    <section id="about" class="section">
+      <p class="eyebrow">About</p>
+      <h1 class="hero-title">Designing bio-inspired materials with mechanics and machine learning.</h1>
+      <div class="prose">
+        <p>
+          I am a Ph.D. candidate in Electromechanical Engineering at
+          <a href="https://www.ugent.be/" target="_blank" rel="noopener">Ghent University</a> (Soete Laboratory, Belgium),
+          supervised by <strong>Prof. Magd Abdel Wahab</strong> and <strong>Prof. Hung Nguyen-Xuan</strong>,
+          and a research assistant at the Center for AI Research (CAIR), VinUniversity, Vietnam.
+          My doctoral research develops <em>climate-resilient, wave-energy-harvesting breakwater structures</em> inspired by nature.
+        </p>
+        <p>
+          My work sits where computational mechanics meets machine learning. I build isogeometric and higher-order
+          plate models for bio-inspired porous materials: triply periodic minimal surface (TPMS) lattices and
+          their rotated (RotTPMS) and nano-reinforced variants. I pair these models with probabilistic,
+          physics-informed and explainable AI for uncertainty quantification and inverse design.
+        </p>
+        <p>
+          Before Ghent, I earned my B.Eng. (rank 3/657) and M.Eng. (rank 1/41) in Civil Engineering at
+          Ho Chi Minh City University of Technology (HCMUT, VNU-HCM), and have been a researcher at the
+          CIRTech Institute, HUTECH, since 2023, with research visits to Ghent University and Ruhr University Bochum.
+        </p>
+      </div>
+
+      <h2 class="sub-title">Research interests</h2>
+      <ul class="interests">
+        <li><span class="dot"></span>Nature / bio-inspired materials, porous materials and metamaterials</li>
+        <li><span class="dot"></span>Theories and numerical methods in computational mechanics (FEM, IGA)</li>
+        <li><span class="dot"></span>Data-driven and scientific machine learning for mechanics</li>
+        <li><span class="dot"></span>Generative and explainable AI for structural and material design</li>
+        <li><span class="dot"></span>Homogenisation, structural / topology optimisation and inverse design</li>
+      </ul>
+
+      <!-- Metrics (filled from data/site.js; static numbers are the fallback) -->
+      <div class="metrics" id="metrics">
+        <div class="stat"><span class="stat-value" data-metric="citations">707</span><span class="stat-label">Citations</span></div>
+        <div class="stat"><span class="stat-value" data-metric="hIndex">14</span><span class="stat-label">h-index</span></div>
+        <div class="stat"><span class="stat-value" data-metric="i10Index">14</span><span class="stat-label">i10-index</span></div>
+        <div class="stat"><span class="stat-value" data-metric="papers">22</span><span class="stat-label">Journal articles</span></div>
+        <figure class="cites-chart" aria-labelledby="cites-cap">
+          <div class="bars" id="cites-bars" role="img"></div>
+          <figcaption id="cites-cap">Citations per year · Google Scholar, <span data-metric="asOf">18 Nov 2026</span></figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ============ NEWS ============ -->
+    <section id="news" class="section">
+      <p class="eyebrow">News</p>
+      <h2 class="section-title">Recent updates</h2>
+      <ul class="news">
+        <li><time>Oct 2026</time><p>Our probabilistic neural network framework for sustainable building design under tropical climate change is out in <em>Applied Soft Computing</em>. Code and data are open.</p></li>
+        <li><time>Jul 2026</time><p>The iterative-order shear deformation theory (ISDT) for anisotropic FG-TPMS plates is published in <em>Engineering Analysis with Boundary Elements</em>.</p></li>
+        <li><time>Apr 2026</time><p>Explainable AI for uncertainty quantification of FG-TPMS nanoplates is published in <em>Computers &amp; Structures</em>.</p></li>
+        <li><time>Jan 2026</time><p>Started my Ph.D. at Ghent University on climate-resilient, wave-energy-harvesting bio-inspired breakwaters.</p></li>
+        <li><time>Nov 2025</time><p>Joined the Center for AI Research (CAIR), VinUniversity, as a research assistant.</p></li>
+        <li><time>Jun 2025</time><p>Research visit to the Institute of Mechanics of Materials, Ruhr University Bochum (Humboldt Research Group Linkage Programme).</p></li>
+      </ul>
+    </section>
+
+    <!-- ============ PUBLICATIONS ============ -->
+    <section id="publications" class="section">
+      <p class="eyebrow">Publications</p>
+      <div class="section-head">
+        <h2 class="section-title">Papers</h2>
+        <a class="text-link" href="https://scholar.google.com/citations?user=RnIIxAIAAAAJ&amp;hl=en" target="_blank" rel="noopener">Full list on Google Scholar <svg class="ico"><use href="#i-arrow"/></svg></a>
+      </div>
+
+      <div class="pub-toolbar">
+        <div class="chips" role="group" aria-label="Filter publications" id="pub-filters">
+          <button class="chip is-active" data-filter="all" type="button">All <span class="count"></span></button>
+          <button class="chip" data-filter="selected" type="button">Selected <span class="count"></span></button>
+          <button class="chip" data-filter="first" type="button">First author <span class="count"></span></button>
+          <button class="chip" data-filter="journal" type="button">Journal <span class="count"></span></button>
+          <button class="chip" data-filter="conference" type="button">Conference <span class="count"></span></button>
+        </div>
+        <div class="pub-tools">
+          <label class="search">
+            <svg class="ico"><use href="#i-search"/></svg>
+            <input id="pub-search" type="search" placeholder="Search title, author, keyword…" aria-label="Search publications">
+          </label>
+          <label class="sort">
+            <span class="visually-hidden">Sort by</span>
+            <select id="pub-sort" aria-label="Sort publications">
+              <option value="year">Newest first</option>
+              <option value="cites">Most cited</option>
+            </select>
+          </label>
+        </div>
+      </div>
+
+      <div id="pub-list" class="pub-list" aria-live="polite">
+        <noscript><p class="muted">Turn on JavaScript to see the publication list, or browse it on <a href="https://scholar.google.com/citations?user=RnIIxAIAAAAJ&amp;hl=en">Google Scholar</a>.</p></noscript>
+      </div>
+      <p class="muted small pub-note">Citation counts from Google Scholar, <span data-metric="asOf">18 Nov 2026</span>. <span class="self-mark">Kim Q. Tran</span> highlighted.</p>
+    </section>
+
+    <!-- ============ CODE ============ -->
+    <section id="code" class="section">
+      <p class="eyebrow">Open source</p>
+      <div class="section-head">
+        <h2 class="section-title">Code &amp; data</h2>
+        <a class="text-link" href="https://github.com/Kim-Q-Tran" target="_blank" rel="noopener">github.com/Kim-Q-Tran <svg class="ico"><use href="#i-arrow"/></svg></a>
+      </div>
+      <div class="repo-grid">
+        <a class="repo" href="https://github.com/Kim-Q-Tran/ProbAI4MATER" target="_blank" rel="noopener">
+          <span class="repo-name">ProbAI4MATER</span>
+          <span class="repo-desc">Probabilistic AI for the MATER sustainability goals: BNN surrogates, NSGA-II and SHAP for building design under climate change.</span>
+          <span class="repo-meta"><span class="lang lang-py"></span>Python · Applied Soft Computing 2027</span>
+        </a>
+        <a class="repo" href="https://github.com/Kim-Q-Tran/Material-UQ" target="_blank" rel="noopener">
+          <span class="repo-name">Material-UQ</span>
+          <span class="repo-desc">Data-driven uncertainty quantification for bio-inspired porous materials with Bayesian neural networks (pSGLD).</span>
+          <span class="repo-meta"><span class="lang lang-py"></span>Python · CMAME 2025</span>
+        </a>
+        <a class="repo" href="https://github.com/Kim-Q-Tran/Eval_ESL_FG-TPMS-plates" target="_blank" rel="noopener">
+          <span class="repo-name">Eval_ESL_FG-TPMS-plates</span>
+          <span class="repo-desc">Iterative-order shear deformation theory and eight single-layer plate theories for FG-TPMS plates in IGA.</span>
+          <span class="repo-meta"><span class="lang lang-m"></span>MATLAB · EABE 2026</span>
+        </a>
+        <a class="repo" href="https://github.com/Kim-Q-Tran/RotTPMS-Plates" target="_blank" rel="noopener">
+          <span class="repo-name">RotTPMS-Plates</span>
+          <span class="repo-desc">Rotating TPMS lattice plates: material rotation of elastic matrices, quasi-3D HSDT and IGA.</span>
+          <span class="repo-meta"><span class="lang lang-m"></span>MATLAB · IJMS 2024</span>
+        </a>
+        <a class="repo" href="https://github.com/Kim-Q-Tran/Temp_FG-CNTR-TPMS-Plates" target="_blank" rel="noopener">
+          <span class="repo-name">Temp_FG-CNTR-TPMS-Plates</span>
+          <span class="repo-desc">Temperature-dependent vibration of CNT-reinforced FG-TPMS plates with a new thermoelastic model.</span>
+          <span class="repo-meta"><span class="lang lang-m"></span>MATLAB · EABE 2025</span>
+        </a>
+        <a class="repo" href="https://github.com/Kim-Q-Tran/Ther-Mech_Buck_RotTPMS-Plates" target="_blank" rel="noopener">
+          <span class="repo-name">Ther-Mech_Buck_RotTPMS-Plates</span>
+          <span class="repo-desc">Thermal and thermo-mechanical buckling of RotTPMS plates via quasi-3D HSDT isogeometric analysis.</span>
+          <span class="repo-meta"><span class="lang lang-m"></span>MATLAB · METS 2025</span>
+        </a>
+        <a class="repo" href="https://github.com/Kim-Q-Tran/GPLR-FG-TPMS-Plates" target="_blank" rel="noopener">
+          <span class="repo-name">GPLR-FG-TPMS-Plates</span>
+          <span class="repo-desc">Three grading frameworks for graphene-platelet-reinforced FG-TPMS plates; static and free vibration.</span>
+          <span class="repo-meta"><span class="lang lang-m"></span>MATLAB · APM 2024</span>
+        </a>
+        <a class="repo" href="https://github.com/Kim-Q-Tran/IGA-FG-TPMS-Rectangular-Plates" target="_blank" rel="noopener">
+          <span class="repo-name">IGA-FG-TPMS-Rectangular-Plates</span>
+          <span class="repo-desc">The original FG-TPMS plate code: P, G and IWP materials, seventh-order SDT, bending, buckling and vibration.</span>
+          <span class="repo-meta"><span class="lang lang-m"></span>MATLAB · Composite Structures 2023</span>
+        </a>
+        <a class="repo" href="https://github.com/Kim-Q-Tran/Vliruos_ITP2023_UGent" target="_blank" rel="noopener">
+          <span class="repo-name">Vliruos_ITP2023_UGent</span>
+          <span class="repo-desc">VLIR-UOS ITP 2023 at Ghent University: machine learning for climate change mitigation in buildings.</span>
+          <span class="repo-meta"><span class="lang lang-py"></span>Python · Training programme</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- ============ EXPERIENCE ============ -->
+    <section id="experience" class="section">
+      <p class="eyebrow">Experience</p>
+      <h2 class="section-title">Academic positions</h2>
+      <ol class="timeline">
+        <li>
+          <span class="when">11/2025 – present</span>
+          <div><h3>Research Assistant</h3><p>Center for AI Research (CAIR), VinUniversity, Vietnam</p></div>
+        </li>
+        <li>
+          <span class="when">04/2023 – present</span>
+          <div><h3>Researcher</h3><p>CIRTech Institute, Ho Chi Minh City University of Technology (HUTECH), Vietnam</p></div>
+        </li>
+        <li>
+          <span class="when">06/2024 &amp; 06/2025</span>
+          <div><h3>Visiting Researcher, Humboldt Research Group Linkage Programme</h3><p>Institute of Mechanics of Materials, Ruhr University Bochum, Germany</p></div>
+        </li>
+        <li>
+          <span class="when">05–06/2023 &amp; 05–06/2024</span>
+          <div><h3>Visiting Researcher, VLIR-UOS ITP</h3><p>Faculty of Engineering and Architecture, Ghent University, Belgium</p></div>
+        </li>
+        <li>
+          <span class="when">03/2022 – 03/2023</span>
+          <div><h3>Research Assistant</h3><p>CIRTech Institute, HUTECH, Vietnam</p></div>
+        </li>
+        <li>
+          <span class="when">03/2022 – 03/2023</span>
+          <div><h3>Teaching Assistant</h3><p>Faculty of Civil Engineering, HCMUT, VNU-HCM, Vietnam</p></div>
+        </li>
+      </ol>
+    </section>
+
+    <!-- ============ EDUCATION ============ -->
+    <section id="education" class="section">
+      <p class="eyebrow">Education</p>
+      <h2 class="section-title">Degrees</h2>
+      <ol class="timeline">
+        <li>
+          <span class="when">01/2026 – present</span>
+          <div>
+            <h3>Ph.D. in Electromechanical Engineering</h3>
+            <p>Faculty of Engineering and Architecture, Ghent University, Belgium</p>
+            <p class="detail">Climate-resilient solutions using wave-energy-harvesting bio-inspired breakwater structures<br>
+            Supervisors: Prof. Magd Abdel Wahab, Prof. Hung Nguyen-Xuan</p>
+          </div>
+        </li>
+        <li>
+          <span class="when">09/2021 – 04/2023</span>
+          <div>
+            <h3>M.Eng. in Civil Engineering</h3>
+            <p>Ho Chi Minh City University of Technology (HCMUT), VNU-HCM, Vietnam</p>
+            <p class="detail">Thesis: Machine learning in predicting mechanical behaviors of 3D-printed beams with TPMS sandwich cores<br>
+            GPA 9.04/10 · <strong>Rank 1/41</strong></p>
+          </div>
+        </li>
+        <li>
+          <span class="when">07/2017 – 11/2021</span>
+          <div>
+            <h3>B.Eng. in Civil Engineering</h3>
+            <p>Ho Chi Minh City University of Technology (HCMUT), VNU-HCM, Vietnam</p>
+            <p class="detail">GPA 8.86/10 · <strong>Rank 3/657</strong></p>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <!-- ============ AWARDS & SERVICE ============ -->
+    <section id="service" class="section">
+      <p class="eyebrow">Recognition &amp; service</p>
+      <h2 class="section-title">Awards, reviewing and skills</h2>
+
+      <div class="cards-2">
+        <div class="panel">
+          <h3 class="panel-title"><svg class="ico"><use href="#i-award"/></svg>Awards</h3>
+          <ul class="plain">
+            <li><strong>First Prize</strong>, Strength of Materials, National Mechanics Olympiad, Vietnam Association of Mechanics <span class="muted">· 2019</span></li>
+            <li><strong>Top of class</strong>, M.Eng. in Civil Engineering, HCMUT <span class="muted">· rank 1/41, 2023</span></li>
+            <li>Top 3 of 657, B.Eng. in Civil Engineering, HCMUT <span class="muted">· 2021</span></li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h3 class="panel-title"><svg class="ico"><use href="#i-code"/></svg>Skills</h3>
+          <dl class="skills">
+            <dt>Programming</dt><dd>Python, MATLAB</dd>
+            <dt>Numerical methods</dt><dd>FEM, IGA, optimisation algorithms</dd>
+            <dt>Machine learning</dt><dd>PINNs, Bayesian / probabilistic ML, generative deep learning, model-agnostic &amp; explainable AI</dd>
+            <dt>Tools</dt><dd>LaTeX, Linux, MS Office, AutoCAD, Canva</dd>
+            <dt>Languages</dt><dd>English (fluent), Vietnamese (native)</dd>
+          </dl>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3 class="panel-title"><svg class="ico"><use href="#i-check"/></svg>Peer reviewer for <span class="muted">(verified on ORCID)</span></h3>
+        <ul class="tag-cloud">
+          <li>Applied Mathematical Modelling</li>
+          <li>Thin-Walled Structures</li>
+          <li>Computer-Aided Design</li>
+          <li>Construction and Building Materials</li>
+          <li>Chemical Engineering Journal</li>
+          <li>Applied Thermal Engineering</li>
+          <li>Int. J. of Mechanics and Materials in Design</li>
+          <li>Int. J. of Thermal Sciences</li>
+          <li>Int. Communications in Heat and Mass Transfer</li>
+          <li>Int. J. of Heat and Fluid Flow</li>
+          <li>Case Studies in Thermal Engineering</li>
+          <li>Structures</li>
+          <li>Materials Today Communications</li>
+          <li>Physica B: Condensed Matter</li>
+          <li>Results in Engineering</li>
+        </ul>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <p>© <span id="year">2026</span> Kim Q. Tran · Built as a static page, no tracking.</p>
+      <p class="muted small">Publication data: Google Scholar, ORCID 0000-0003-0924-9235, Crossref. Last updated 18 Nov 2026.</p>
+    </footer>
+  </main>
+</div>
+
+<!-- Data first, then the renderer. Plain scripts so file:// works. -->
+<script src="data/site.js"></script>
+<script src="data/publications.js"></script>
+<script src="assets/js/main.js"></script>
+</body>
+</html>
