@@ -1,18 +1,27 @@
 # Kim Q. Tran — personal academic website
 
-A static, dependency-free homepage for GitHub Pages. It also works **offline**:
+Live at **https://kim-q-tran.github.io/**
+
+A static, dependency-free site for GitHub Pages. It also works **offline**:
 double-click `index.html` and it opens straight from disk (no server, no CDN, no
 web fonts).
 
 ```
-index.html                 page content (about, news, experience, education, service)
-assets/css/style.css       all styling (light + dark theme)
-assets/js/main.js          publication list, filters, search, BibTeX, theme toggle
-assets/img/profile.jpg     portrait (from the CV)
-assets/img/papers/         optional graphical abstracts, one per paper
-data/publications.js       ← the publication list (edit this to add papers)
-data/site.js               settings + Google Scholar numbers
-papers/                    ← accepted manuscripts (PDF), one per paper
+index.html                  home page: about, keywords, news, publications, code,
+                            experience, education, recognition, references
+research/<slug>.html        one page per research topic (explanation + interactive visualization)
+pub/<id>.html               one page per paper (highlights, figures, citation, open discussion)
+data/publications.js        <- the publication list (edit this to add papers)
+data/topics.js              <- research topics / keywords and their page text
+data/site.js                settings, Google Scholar numbers, discussion settings
+assets/css/style.css        all styling (light + dark theme)
+assets/js/common.js         shared helpers (icons, theme, BibTeX, formatting)
+assets/js/main.js           home page: charts, filters, "show more"
+assets/js/paper.js          paper pages
+assets/js/topic.js, viz.js  research-topic pages and their visualizations
+assets/img/papers/          figures and thumbnails for papers
+papers/                     <- accepted manuscripts (PDF), one per paper
+tools/build-pages.ps1       creates pub/*.html and research/*.html from the data files
 ```
 
 ## Everyday edits
@@ -23,49 +32,44 @@ papers/                    ← accepted manuscripts (PDF), one per paper
    `data/publications.js`, for example `papers/ijms2024-rottpms.pdf`.
 2. In `data/publications.js`, set `pdf: "papers/ijms2024-rottpms.pdf"` on that entry.
 
-The dashed "Accepted manuscript · add PDF" slot on the card becomes a real button.
-(Hover over a slot in the browser to see the exact file name it expects.)
+The "Manuscript coming soon" slot becomes a real button, and the paper moves to
+"Accepted manuscript here" in the Full text chart. Hover over a slot to see the
+exact file name it expects.
+
+**Add demonstration figures to a paper page**
+
+1. Save the images in `assets/img/papers/<id>/` (for example `fig1.jpg`).
+2. On that entry, list them:
+   `figures: [{ src: "assets/img/papers/<id>/fig1.jpg", caption: "What the figure shows" }]`
 
 **Add a newly accepted paper**
 
-Copy an entry in `data/publications.js`, give it a new unique `id`, and set
-`status: "accepted"` (or `"in-review"` / `"preprint"`). It appears under
-*Accepted / in press* at the top of the list. When it is published, change the
-status to `"published"` and fill in `doi`, `volume`, `pages`.
-
-**Add a graphical abstract**
-
-Save an image as `assets/img/papers/<id>.jpg` (4:3 looks best) and set
-`image: "assets/img/papers/<id>.jpg"`. Without an image the card shows a
-coloured tile with the journal abbreviation.
-
-**Update citation numbers**
-
-Edit `scholar` in `data/site.js` (totals and per-year bars) and `citations` on
-each paper in `data/publications.js`.
-
-**News, experience, education**: edit `index.html` directly.
-
-## Before making it public
-
-1. In `data/site.js` set `showPlaceholders: false` so empty PDF slots and the
-   accepted-papers placeholder are hidden from visitors.
-2. In `index.html` delete the `<meta name="robots" content="noindex, nofollow">` line.
-3. Fill in the venue of the conference paper "Elastoplastic bending behaviors of
-   steel plates…" (`conf-elastoplastic`). Google Scholar has the wrong venue for it.
-4. Go live. The draft lives in the **private** repo `Kim-Q-Tran/website` on purpose:
-   a repo named `Kim-Q-Tran.github.io` publishes itself as soon as it has content
-   (even when private on your plan), and GitHub won't let you switch that off.
-   When you are ready:
-
-   ```bash
-   gh repo rename Kim-Q-Tran.github.io -R Kim-Q-Tran/website --yes
-   gh repo edit Kim-Q-Tran/Kim-Q-Tran.github.io --visibility public --accept-visibility-change-consequences
-   git remote set-url origin https://github.com/Kim-Q-Tran/Kim-Q-Tran.github.io.git
+1. Copy an entry in `data/publications.js`, give it a new unique `id`, and set
+   `status: "accepted"`. It appears under *Accepted / in press* on the home page.
+2. Create its page once:
    ```
+   powershell -ExecutionPolicy Bypass -File tools\build-pages.ps1
+   ```
+3. When it is published, set `status: "published"` and fill in `doi`, `volume`, `pages`.
 
-   If it does not publish by itself, open **Settings → Pages → Deploy from a
-   branch → `main` / root**. The site is then live at `https://kim-q-tran.github.io/`.
+**Other fields worth keeping current**
+
+- `quartile`: JCR best quartile (`"Q1"`–`"Q4"`, or `""` if the journal is not in JCR).
+  These feed the "By venue" chart. Check them against your JCR access each June.
+- `rank`: CORE rank for conference papers (`"A*"`, `"A"`, …).
+- `corresponding`: names of the corresponding authors (shown with ✉).
+- `topics`: keywords from `data/topics.js`; the first one is the paper's primary keyword.
+- `citations` per paper and `scholar` totals in `data/site.js`.
+
+**News, experience, education, references**: edit `index.html` directly.
+
+## Open discussion on paper pages
+
+Each paper page links to GitHub Discussions on this repository ("Start a
+discussion", "See existing threads"). To show comments **inside** the page:
+
+1. Install the giscus app on this repository: https://github.com/apps/giscus
+2. In `data/site.js` set `giscus.enabled: true` (the ids are already filled in).
 
 ## Sharing accepted manuscripts
 
@@ -77,3 +81,4 @@ before uploading.
 ## Preview locally
 
 Double-click `index.html`, or serve the folder with any static server.
+Without JavaScript the paper and topic pages show only their title and summary.

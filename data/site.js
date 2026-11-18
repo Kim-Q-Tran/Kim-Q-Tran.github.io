@@ -4,16 +4,34 @@
  * straight from disk (file://), with no web server.
  */
 window.SITE = {
-  // true  -> show the dashed "add accepted manuscript" slots and the
-  //          "accepted papers" placeholder (handy while the site is private).
-  // false -> hide every empty slot before you make the site public.
+  // true  -> show the dashed "coming soon" slots for manuscripts and figures
+  //          and the "accepted papers" placeholder.
+  // false -> hide every empty slot.
   showPlaceholders: true,
+
+  // How many papers the home page shows before "Show more".
+  papersPerPage: 5,
+
+  // GitHub repository that hosts the site (used for discussion links).
+  repo: "Kim-Q-Tran/Kim-Q-Tran.github.io",
+
+  // Open discussion under each paper page.
+  //  - Always shown: a link to GitHub Discussions for that paper.
+  //  - Embedded comments (giscus): install the giscus app on the repository
+  //    (https://github.com/apps/giscus), then set enabled: true.
+  giscus: {
+    enabled: false,
+    repo: "Kim-Q-Tran/Kim-Q-Tran.github.io",
+    repoId: "",
+    category: "General",
+    categoryId: ""
+  },
 
   // Google Scholar snapshot (update these numbers by hand when you like).
   scholar: {
     profile: "https://scholar.google.com/citations?user=RnIIxAIAAAAJ&hl=en",
     userId: "RnIIxAIAAAAJ",
-    asOf: "18 Nov 2026",
+    asOf: "Nov 18, 2026",
     citations: 707,
     hIndex: 14,
     i10Index: 14,

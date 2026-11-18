@@ -1,48 +1,11 @@
-/* Kim Q. Tran — homepage behaviour. No dependencies; runs from file:// too. */
+/* Home page: metrics, keyword cards, publication overview charts,
+ * publication list (5 at a time) and "show more" toggles. */
 (function () {
   "use strict";
-
-  var SITE = window.SITE || { showPlaceholders: false, scholar: null };
-  var PUBS = (window.PUBLICATIONS || []).slice();
-  var SELF = /^(Kim Q\. Tran|Kim Tran-Quoc|K\. ?Q\. Tran)$/;
-  var AREA_LABEL = { materials: "Bio-inspired materials", ai: "AI & uncertainty", methods: "Computational methods" };
-  var MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-  /* ---------------- helpers ---------------- */
-  function esc(s) {
-    return String(s == null ? "" : s)
-      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
-  }
-  function icon(id) { return '<svg class="ico" aria-hidden="true"><use href="#i-' + id + '"/></svg>'; }
-  function isSelf(name) { return SELF.test(name); }
-  function isFirst(p) { return p.authors && p.authors.length && isSelf(p.authors[0]); }
-  function fmtMonth(iso) {
-    if (!iso) return "";
-    var m = /^(\d{4})-(\d{2})/.exec(iso);
-    return m ? MONTHS[+m[2] - 1] + " " + m[1] : "";
-  }
-  function ascii(s) { return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[Łł]/g, "l"); }
-
-  /* ---------------- theme ---------------- */
-  var root = document.documentElement;
-  var mq = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
-  function effectiveDark() {
-    var t = root.getAttribute("data-theme");
-    if (t === "dark") return true;
-    if (t === "light") return false;
-    return !!(mq && mq.matches);
-  }
-  function syncTheme() { root.classList.toggle("is-dark", effectiveDark()); }
-  syncTheme();
-  if (mq && mq.addEventListener) mq.addEventListener("change", syncTheme);
-  var toggle = document.querySelector(".theme-toggle");
-  if (toggle) toggle.addEventListener("click", function () {
-    var next = effectiveDark() ? "light" : "dark";
-    root.setAttribute("data-theme", next);
-    try { localStorage.setItem("theme", next); } catch (e) {}
-    syncTheme();
-  });
+  var K = window.KQT;
+  if (!K) return;
+  var SITE = K.SITE, PUBS = K.PUBS.slice(), TOPICS = K.TOPICS, esc = K.esc, icon = K.icon;
+  var PER_PAGE = SITE.papersPerPage || 5;
 
   /* ---------------- metrics ---------------- */
   var sc = SITE.scholar;
@@ -53,7 +16,6 @@
       var k = el.getAttribute("data-metric");
       if (values[k] != null) el.textContent = values[k];
     });
-
     var bars = document.getElementById("cites-bars");
     if (bars && sc.perYear && sc.perYear.length) {
       var max = Math.max.apply(null, sc.perYear.map(function (d) { return d.count; })) || 1;
@@ -62,81 +24,121 @@
       bars.innerHTML = sc.perYear.map(function (d, i) {
         var h = Math.max(2, Math.round((d.count / max) * 52));
         return '<button type="button" class="bar-col' + (i === last ? " is-labelled" : "") + '" aria-label="' + d.year + ": " + d.count + ' citations">' +
-          '<span class="bar-val">' + d.count + '</span>' +
+          '<span class="bar-val">' + d.count + "</span>" +
           '<span class="bar" style="height:' + h + 'px"></span>' +
-          '<span class="bar-year">' + d.year + '</span></button>';
+          '<span class="bar-year">' + d.year + "</span></button>";
       }).join("");
     }
   }
 
-  /* ---------------- BibTeX ---------------- */
-  var SURNAME_OVERRIDES = {
-    "Magd Abdel Wahab": ["Abdel Wahab", "Magd"],
-    "Krzysztof Kamil Żur": ["Żur", "Krzysztof Kamil"]
-  };
-  function splitName(n) {
-    if (SURNAME_OVERRIDES[n]) return SURNAME_OVERRIDES[n];
-    var parts = n.trim().split(/\s+/);
-    var last = parts.pop();
-    return [last, parts.join(" ")];
+  /* ---------------- keyword cards ---------------- */
+  function relatedCount(slug) { return PUBS.filter(function (p) { return (p.topics || []).indexOf(slug) !== -1; }).length; }
+  var grid = document.getElementById("topic-grid");
+  if (grid) {
+    grid.innerHTML = TOPICS.map(function (t, i) {
+      var n = relatedCount(t.slug);
+      return '<a class="topic-card" style="--tc: var(--t' + (i + 1) + ')" href="' + K.topicUrl(t.slug) + '">' +
+        '<span class="topic-card-top"><span class="dot"></span><span class="topic-count">' + n + " paper" + (n === 1 ? "" : "s") + "</span></span>" +
+        '<span class="topic-name">' + esc(t.name) + "</span>" +
+        '<span class="topic-short">' + esc(t.short) + "</span>" +
+        '<span class="topic-go">Visualization &amp; explanation ' + icon("right") + "</span></a>";
+    }).join("");
   }
-  function bibAuthor(n) { var s = splitName(n); return s[1] ? s[0] + ", " + s[1] : s[0]; }
-  function bibEsc(s) { return String(s).replace(/&/g, "\\&").replace(/–/g, "--"); }
-  function bibKey(p) {
-    var last = ascii(splitName(p.authors[0])[0]).toLowerCase().replace(/[^a-z]/g, "");
-    var stop = /^(a|an|the|of|on|in|for|and|with|via|to|3d|new|three|novel)$/i;
-    var word = (p.title.split(/[^A-Za-z0-9]+/).filter(function (w) { return w && !stop.test(w); })[0] || "paper").toLowerCase();
-    return last + p.year + word;
-  }
-  function bibtex(p) {
-    var conf = p.type === "conference";
-    var f = [
-      ["title", "{" + bibEsc(p.title) + "}"],
-      ["author", bibEsc(p.authors.map(bibAuthor).join(" and "))],
-      [conf ? "booktitle" : "journal", bibEsc(p.venue)]
-    ];
-    if (p.volume) f.push(["volume", p.volume]);
-    if (p.issue) f.push(["number", p.issue]);
-    if (p.pages) f.push(["pages", bibEsc(p.pages)]);
-    f.push(["year", String(p.year)]);
-    if (p.doi) f.push(["doi", p.doi]);
-    var w = Math.max.apply(null, f.map(function (x) { return x[0].length; }));
-    return "@" + (conf ? "inproceedings" : "article") + "{" + bibKey(p) + ",\n" +
-      f.map(function (x) { return "  " + (x[0] + "         ").slice(0, w) + " = {" + x[1] + "}"; }).join(",\n") + "\n}";
-  }
-  function copyText(text) {
-    if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text);
-    return new Promise(function (resolve, reject) {
-      var ta = document.createElement("textarea");
-      ta.value = text; ta.setAttribute("readonly", ""); ta.style.position = "fixed"; ta.style.opacity = "0";
-      document.body.appendChild(ta); ta.select();
-      try { document.execCommand("copy") ? resolve() : reject(); } catch (e) { reject(e); }
-      document.body.removeChild(ta);
-    });
+  var cloud = document.getElementById("kw-cloud");
+  if (cloud) {
+    var terms = [];
+    TOPICS.forEach(function (t) { (t.terms || []).forEach(function (w) { if (terms.indexOf(w) === -1) terms.push(w); }); });
+    cloud.innerHTML = terms.map(function (w) {
+      return '<li><a href="#publications" class="js-kw" data-q="' + esc(w) + '">' + icon("tag") + esc(w) + "</a></li>";
+    }).join("");
   }
 
-  /* ---------------- publication card ---------------- */
-  function authorsHTML(p) {
-    return p.authors.map(function (a) {
-      return isSelf(a) ? '<span class="me">' + esc(a) + "</span>" : esc(a);
-    }).join(", ");
-  }
-  function venueHTML(p) {
-    var s = "<em>" + esc(p.venue) + "</em>";
-    if (p.volume) s += ", " + esc(p.volume) + (p.issue ? "(" + esc(p.issue) + ")" : "");
-    if (p.pages) s += ", " + esc(p.pages);
-    s += " · " + esc(p.year);
-    var on = fmtMonth(p.online);
-    if (on) s += ' <span class="muted">· online ' + on + "</span>";
-    return s;
-  }
-  function thumbHTML(p) {
-    if (p.image) {
-      return '<div class="pub-thumb has-image"><img src="' + esc(p.image) + '" alt="Graphical abstract: ' + esc(p.title) + '" loading="lazy"></div>';
+  /* ---------------- overview donuts ---------------- */
+  function donut(el, title, segments, centerValue, centerLabel) {
+    if (!el) return;
+    var total = segments.reduce(function (s, d) { return s + d.count; }, 0) || 1;
+    // whole-number percentages that add up to exactly 100 (largest remainder)
+    var raw = segments.map(function (d) { return d.count / total * 100; });
+    var pcts = raw.map(Math.floor);
+    var left = 100 - pcts.reduce(function (a, b) { return a + b; }, 0);
+    raw.map(function (r, i) { return [r - Math.floor(r), i]; }).sort(function (a, b) { return b[0] - a[0]; })
+      .slice(0, segments.some(function (d) { return d.count; }) ? left : 0).forEach(function (x) { pcts[x[1]]++; });
+    segments.forEach(function (d, i) { d.pct = pcts[i]; });
+    var R = 54, C = 2 * Math.PI * R, GAP = 2.5;
+    var nonzero = segments.filter(function (d) { return d.count > 0; });
+    var offset = 0;
+    var arcs = nonzero.map(function (d) {
+      var len = (d.count / total) * C;
+      var dash = Math.max(len - (nonzero.length > 1 ? GAP : 0), 0.5);
+      var s = '<circle class="arc" data-key="' + esc(d.key) + '" r="' + R + '" cx="70" cy="70" fill="none" ' +
+        'style="stroke: ' + d.color + '" stroke-width="20" stroke-dasharray="' + dash.toFixed(2) + " " + (C - dash).toFixed(2) + '" ' +
+        'stroke-dashoffset="' + (-offset).toFixed(2) + '" transform="rotate(-90 70 70)" tabindex="0" role="img" ' +
+        'aria-label="' + esc(d.label) + ": " + d.count + " (" + d.pct + '%)"><title>' +
+        esc(d.label) + ": " + d.count + " (" + d.pct + "%)</title></circle>";
+      offset += len;
+      return s;
+    }).join("");
+    var legend = segments.map(function (d) {
+      var pct = d.pct;
+      return '<li data-key="' + esc(d.key) + '" class="' + (d.count ? "" : "is-zero") + '">' +
+        '<span class="swatch" style="background:' + d.color + '"></span>' +
+        '<span class="lg-label">' + esc(d.label) + "</span>" +
+        '<span class="lg-val">' + d.count + ' <span class="muted">· ' + pct + "%</span></span></li>";
+    }).join("");
+    el.innerHTML = '<figcaption class="donut-title">' + esc(title) + "</figcaption>" +
+      '<div class="donut-body"><svg class="donut" viewBox="0 0 140 140" aria-hidden="false">' +
+      '<circle r="' + R + '" cx="70" cy="70" fill="none" class="donut-track" stroke-width="20"/>' + arcs +
+      '<text x="70" y="68" text-anchor="middle" class="donut-num">' + esc(centerValue) + "</text>" +
+      '<text x="70" y="86" text-anchor="middle" class="donut-sub">' + esc(centerLabel) + "</text></svg>" +
+      '<ul class="legend">' + legend + "</ul></div>";
+    // hover/focus linking between arcs and legend rows
+    function setActive(key) {
+      el.querySelectorAll("[data-key]").forEach(function (n) { n.classList.toggle("is-dim", !!key && n.getAttribute("data-key") !== key); });
     }
-    return '<div class="pub-thumb" data-area="' + esc(p.area || "materials") + '" aria-hidden="true">' +
-      '<div><div class="thumb-venue">' + esc(p.venueShort || "") + '</div><div class="thumb-year">' + esc(p.year) + "</div></div>" +
-      '<div class="thumb-area">' + esc(AREA_LABEL[p.area] || "") + "</div></div>";
+    el.addEventListener("mouseover", function (e) { var n = e.target.closest("[data-key]"); setActive(n ? n.getAttribute("data-key") : null); });
+    el.addEventListener("mouseleave", function () { setActive(null); });
+    el.addEventListener("focusin", function (e) { var n = e.target.closest("[data-key]"); setActive(n ? n.getAttribute("data-key") : null); });
+    el.addEventListener("focusout", function () { setActive(null); });
+  }
+
+  var published = PUBS.filter(function (p) { return p.status === "published" || !p.status; });
+  function countBy(fn, key) { return published.filter(function (p) { return fn(p) === key; }).length; }
+
+  donut(document.getElementById("donut-type"), "By venue",
+    [
+      { key: "q1", label: "ISI Q1 journals", color: "var(--c-q1)", count: countBy(K.pubCategory, "q1") },
+      { key: "q2", label: "ISI Q2 journals", color: "var(--c-q2)", count: countBy(K.pubCategory, "q2") },
+      { key: "q34", label: "ISI Q3–Q4 journals", color: "var(--c-q34)", count: countBy(K.pubCategory, "q34") },
+      { key: "otherJ", label: "Other journals", color: "var(--c-otherj)", count: countBy(K.pubCategory, "otherJ") },
+      { key: "confA", label: "Conferences (A/A*)", color: "var(--c-confa)", count: countBy(K.pubCategory, "confA") },
+      { key: "confOther", label: "Other conferences", color: "var(--c-confo)", count: countBy(K.pubCategory, "confOther") },
+      { key: "book", label: "Books & chapters", color: "var(--c-book)", count: countBy(K.pubCategory, "book") }
+    ], published.length, "outputs");
+
+  donut(document.getElementById("donut-fulltext"), "Full text",
+    [
+      { key: "oa", label: "Open access", color: "var(--c-oa)", count: countBy(K.fullText, "oa") },
+      { key: "accepted", label: "Accepted manuscript here", color: "var(--c-acc)", count: countBy(K.fullText, "accepted") },
+      { key: "none", label: "Publisher only (for now)", color: "var(--c-none)", count: countBy(K.fullText, "none") }
+    ], (countBy(K.fullText, "oa") + countBy(K.fullText, "accepted")), "free to read");
+
+  donut(document.getElementById("donut-topic"), "By primary keyword",
+    TOPICS.map(function (t, i) {
+      return { key: t.slug, label: t.name, color: "var(--t" + (i + 1) + ")",
+        count: published.filter(function (p) { return (p.topics || [])[0] === t.slug; }).length };
+    }), TOPICS.length, "keywords");
+
+  /* ---------------- publication cards ---------------- */
+  function thumbHTML(p) {
+    var href = K.pubUrl(p);
+    if (p.image) {
+      return '<a class="pub-thumb has-image" href="' + href + '" tabindex="-1"><img src="' + esc(K.asset(p.image)) + '" alt="" loading="lazy"></a>';
+    }
+    var t = K.topic((p.topics || [])[0]);
+    var idx = K.topicIndex((p.topics || [])[0]) + 1;
+    return '<a class="pub-thumb" href="' + href + '" tabindex="-1" aria-hidden="true" style="--tile: var(--tile' + idx + ')">' +
+      '<span><span class="thumb-venue">' + esc(p.venueShort || "") + '</span><span class="thumb-year">' + esc(p.year) + "</span></span>" +
+      '<span class="thumb-area">' + esc(t ? t.name : "") + "</span></a>";
   }
   function badgesHTML(p) {
     var b = [];
@@ -144,13 +146,13 @@
       var label = { accepted: "Accepted", "in-review": "Under review", preprint: "Preprint" }[p.status] || p.status;
       b.push('<span class="badge badge-status">' + esc(label) + "</span>");
     }
-    b.push('<span class="badge">' + (p.type === "conference" ? "Conference" : "Journal") + "</span>");
-    if (isFirst(p)) b.push('<span class="badge badge-accent">First author</span>');
+    b.push(K.quartileBadge(p));
+    if (p.type === "conference") b.push('<span class="badge">Conference</span>');
+    if (K.isFirst(p)) b.push('<span class="badge badge-accent">First author</span>');
+    if (K.selfCorresponding(p)) b.push('<span class="badge badge-accent">Corresponding author</span>');
     if (p.selected) b.push('<span class="badge badge-accent">' + icon("star") + "Selected</span>");
-    if (p.links && (p.links.oa || p.links.arxiv)) b.push('<span class="badge">' + icon("unlock") + "Free to read</span>");
-    if (p.citations > 0 && p.status === "published") {
-      b.push('<span class="cites">Cited by <strong>' + p.citations + "</strong></span>");
-    }
+    if (K.fullText(p) !== "none") b.push('<span class="badge badge-oa">' + icon("unlock") + "Free to read</span>");
+    if (p.citations > 0 && p.status === "published") b.push('<span class="cites">Cited by <strong>' + p.citations + "</strong></span>");
     return b.join("");
   }
   function actionsHTML(p) {
@@ -159,69 +161,63 @@
     function link(href, ic, text, cls) {
       return '<a class="btn' + (cls ? " " + cls : "") + '" href="' + esc(href) + '" target="_blank" rel="noopener">' + icon(ic) + text + "</a>";
     }
-    if (p.doi) a.push(link("https://doi.org/" + p.doi, "link", "DOI", "btn-primary"));
+    a.push('<a class="btn btn-primary" href="' + K.pubUrl(p) + '">' + icon("right") + "Details &amp; figures</a>");
+    if (p.doi) a.push(link("https://doi.org/" + p.doi, "link", "DOI"));
     if (p.pdf) {
-      a.push(link(p.pdf, "file", "Accepted manuscript"));
+      a.push(link(K.asset(p.pdf), "file", "Accepted manuscript"));
     } else if (SITE.showPlaceholders) {
-      var hint = "Add the file as papers/" + p.id + ".pdf, then set pdf: \"papers/" + p.id + ".pdf\" for this entry in data/publications.js";
-      a.push('<span class="slot" title="' + esc(hint) + '">' + icon("upload") + "Accepted manuscript · add PDF</span>");
+      var hint = "Owner: add papers/" + p.id + ".pdf and set pdf: \"papers/" + p.id + ".pdf\" in data/publications.js";
+      a.push('<span class="slot" title="' + esc(hint) + '">' + icon("upload") + "Manuscript coming soon</span>");
     }
-    if (L.oa && L.oa !== L.arxiv) a.push(link(L.oa, "unlock", "Open access"));
-    if (L.arxiv) a.push(link(L.arxiv, "file", "arXiv"));
+    if (L.oa) a.push(link(L.oa, "unlock", "Free full text"));
     if (L.code) a.push(link(L.code, "github", "Code"));
     if (L.data) a.push(link(L.data, "data", "Data"));
-    if (L.scholar && sc) a.push(link("https://scholar.google.com/citations?view_op=view_citation&hl=en&user=" + sc.userId + "&citation_for_view=" + sc.userId + ":" + L.scholar, "cap", "Scholar"));
     a.push('<button class="btn js-cite" type="button" aria-expanded="false" aria-controls="bib-' + esc(p.id) + '">' + icon("quote") + "Cite</button>");
     return a.join("");
   }
   function cardHTML(p) {
-    var titleInner = p.doi
-      ? '<a href="https://doi.org/' + esc(p.doi) + '" target="_blank" rel="noopener">' + esc(p.title) + "</a>"
-      : esc(p.title);
     return '<article class="pub' + (p.selected ? " is-selected" : "") + '" id="pub-' + esc(p.id) + '">' +
       thumbHTML(p) +
       '<div class="pub-body">' +
         '<div class="pub-top">' + badgesHTML(p) + "</div>" +
-        '<h3 class="pub-title">' + titleInner + "</h3>" +
-        '<p class="pub-authors">' + authorsHTML(p) + "</p>" +
-        '<p class="pub-venue">' + venueHTML(p) + "</p>" +
+        '<h3 class="pub-title"><a href="' + K.pubUrl(p) + '">' + esc(p.title) + "</a></h3>" +
+        '<p class="pub-authors">' + K.authorsHTML(p) + "</p>" +
+        '<p class="pub-venue">' + K.venueHTML(p) + "</p>" +
         (p.summary ? '<p class="pub-summary">' + esc(p.summary) + "</p>" : "") +
-        (p.tags && p.tags.length ? '<ul class="pub-tags" aria-label="Keywords">' + p.tags.map(function (t) { return "<li>" + esc(t) + "</li>"; }).join("") + "</ul>" : "") +
+        '<div class="pub-topics">' + K.topicChips(p) + "</div>" +
         '<div class="pub-actions">' + actionsHTML(p) + "</div>" +
         '<div class="bibtex" id="bib-' + esc(p.id) + '" hidden>' +
-          '<pre tabindex="0">' + esc(bibtex(p)) + "</pre>" +
-          '<button class="btn copy js-copy" type="button">' + icon("copy") + "Copy</button>" +
+          '<pre tabindex="0">' + esc(K.bibtex(p)) + "</pre>" +
+          '<button class="btn copy js-copy" type="button">' + icon("copy") + '<span class="lbl">Copy</span></button>' +
         "</div>" +
       "</div></article>";
   }
   function acceptedPlaceholder() {
     return '<div class="pub-placeholder">' + icon("plus") +
-      "<div><strong>Space for newly accepted papers.</strong><br>" +
-      'Add an entry with <code>status: "accepted"</code> to <code>data/publications.js</code> and it appears here, ' +
-      'with its accepted manuscript at <code>papers/&lt;id&gt;.pdf</code>.</div></div>';
+      "<div><strong>Newly accepted papers will appear here.</strong><br>" +
+      '<span class="muted">Articles in press are listed with a link to the accepted manuscript once it is available.</span></div></div>';
   }
 
-  /* ---------------- filtering & rendering ---------------- */
+  /* ---------------- filtering, paging, rendering ---------------- */
   var listEl = document.getElementById("pub-list");
+  var pagerEl = document.getElementById("pub-pager");
   var searchEl = document.getElementById("pub-search");
   var sortEl = document.getElementById("pub-sort");
   var filterBtns = document.querySelectorAll("#pub-filters .chip");
-  var state = { filter: "all", q: "", sort: "year" };
+  var state = { filter: "all", q: "", sort: "year", shown: PER_PAGE };
 
   var FILTERS = {
     all: function () { return true; },
     selected: function (p) { return !!p.selected; },
-    first: isFirst,
+    first: K.isFirst,
     journal: function (p) { return p.type === "journal"; },
     conference: function (p) { return p.type === "conference"; }
   };
-
-  function haystack(p) {
-    return [p.title, p.authors.join(" "), p.venue, p.venueShort, p.year, (p.tags || []).join(" "), p.summary]
-      .join(" ").toLowerCase();
-  }
-  PUBS.forEach(function (p) { p._hay = ascii(haystack(p)); });
-
+  PUBS.forEach(function (p) {
+    var topicNames = (p.topics || []).map(function (s) { var t = K.topic(s); return t ? t.name : ""; });
+    p._hay = K.ascii([p.title, p.authors.join(" "), p.venue, p.venueShort, p.year, (p.tags || []).join(" "),
+      topicNames.join(" "), p.summary, (p.highlights || []).join(" ")].join(" ").toLowerCase());
+  });
   function sortPubs(arr) {
     return arr.slice().sort(function (a, b) {
       if (state.sort === "cites") return (b.citations || 0) - (a.citations || 0) || b.year - a.year;
@@ -231,40 +227,47 @@
 
   function render() {
     if (!listEl) return;
-    var q = ascii(state.q.trim().toLowerCase());
+    var q = K.ascii(state.q.trim().toLowerCase());
     var terms = q ? q.split(/\s+/) : [];
-    var items = PUBS.filter(FILTERS[state.filter]).filter(function (p) {
+    var items = sortPubs(PUBS.filter(FILTERS[state.filter]).filter(function (p) {
       return terms.every(function (t) { return p._hay.indexOf(t) !== -1; });
-    });
-    items = sortPubs(items);
-
-    var html = "";
+    }));
     var pending = items.filter(function (p) { return p.status && p.status !== "published"; });
     var done = items.filter(function (p) { return !p.status || p.status === "published"; });
+    var visible = done.slice(0, state.shown);
 
+    var html = "";
     if (pending.length || (SITE.showPlaceholders && state.filter === "all" && !q)) {
       html += '<h3 class="pub-group-title">Accepted / in press <span class="muted">' + pending.length + "</span></h3>";
       html += pending.length ? pending.map(cardHTML).join("") : acceptedPlaceholder();
     }
-
     if (!done.length && !pending.length) {
       html += '<div class="pub-empty">No publications match “' + esc(state.q) + '”.</div>';
     } else if (state.sort === "year") {
-      var groups = {};
-      var years = [];
-      done.forEach(function (p) {
-        if (!groups[p.year]) { groups[p.year] = []; years.push(p.year); }
-        groups[p.year].push(p);
+      var lastYear = null;
+      visible.forEach(function (p) {
+        if (p.year !== lastYear) {
+          var n = done.filter(function (x) { return x.year === p.year; }).length;
+          html += '<h3 class="pub-group-title">' + p.year + ' <span class="muted">' + n + "</span></h3>";
+          lastYear = p.year;
+        }
+        html += cardHTML(p);
       });
-      years.forEach(function (y) {
-        html += '<h3 class="pub-group-title">' + y + ' <span class="muted">' + groups[y].length + "</span></h3>";
-        html += groups[y].map(cardHTML).join("");
-      });
-    } else if (done.length) {
-      html += done.map(cardHTML).join("");
+    } else {
+      html += visible.map(cardHTML).join("");
     }
     listEl.innerHTML = html;
+
+    if (pagerEl) {
+      var remaining = done.length - visible.length;
+      pagerEl.innerHTML = '<span class="muted small">Showing ' + visible.length + " of " + done.length + "</span>" +
+        (remaining > 0
+          ? '<button class="btn btn-primary js-page-more" type="button">' + icon("chevron") + "Show " + Math.min(PER_PAGE, remaining) + " more</button>" +
+            '<button class="btn js-page-all" type="button">Show all ' + done.length + "</button>"
+          : (done.length > PER_PAGE ? '<button class="btn js-page-less" type="button">Show fewer</button>' : ""));
+    }
   }
+  function resetPaging() { state.shown = PER_PAGE; }
 
   function updateCounts() {
     filterBtns.forEach(function (b) {
@@ -273,42 +276,68 @@
       if (span) span.textContent = c;
     });
   }
+  function setFilter(f) {
+    state.filter = f;
+    filterBtns.forEach(function (x) {
+      var on = x.getAttribute("data-filter") === f;
+      x.classList.toggle("is-active", on);
+      x.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+  }
 
   filterBtns.forEach(function (b) {
-    b.addEventListener("click", function () {
-      state.filter = b.getAttribute("data-filter");
-      filterBtns.forEach(function (x) { x.classList.toggle("is-active", x === b); x.setAttribute("aria-pressed", x === b ? "true" : "false"); });
-      render();
-    });
+    b.addEventListener("click", function () { setFilter(b.getAttribute("data-filter")); resetPaging(); render(); });
   });
-  if (searchEl) searchEl.addEventListener("input", function () { state.q = searchEl.value; render(); });
-  if (sortEl) sortEl.addEventListener("change", function () { state.sort = sortEl.value; render(); });
+  if (searchEl) searchEl.addEventListener("input", function () { state.q = searchEl.value; resetPaging(); render(); });
+  if (sortEl) sortEl.addEventListener("change", function () { state.sort = sortEl.value; resetPaging(); render(); });
+
+  if (pagerEl) pagerEl.addEventListener("click", function (e) {
+    if (e.target.closest(".js-page-more")) { state.shown += PER_PAGE; render(); }
+    else if (e.target.closest(".js-page-all")) { state.shown = Infinity; render(); }
+    else if (e.target.closest(".js-page-less")) {
+      state.shown = PER_PAGE; render();
+      document.getElementById("publications").scrollIntoView({ behavior: "smooth" });
+    }
+  });
 
   if (listEl) listEl.addEventListener("click", function (e) {
     var cite = e.target.closest(".js-cite");
-    if (cite) {
-      var box = document.getElementById(cite.getAttribute("aria-controls"));
-      var open = cite.getAttribute("aria-expanded") === "true";
-      cite.setAttribute("aria-expanded", open ? "false" : "true");
-      if (box) box.hidden = open;
-      return;
-    }
-    var copy = e.target.closest(".js-copy");
-    if (copy) {
-      var pre = copy.parentNode.querySelector("pre");
-      copyText(pre.textContent).then(function () {
-        copy.lastChild.textContent = "Copied";
-        setTimeout(function () { copy.lastChild.textContent = "Copy"; }, 1600);
-      }, function () {
-        var r = document.createRange(); r.selectNodeContents(pre);
-        var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
-      });
-    }
+    if (!cite) return;
+    var box = document.getElementById(cite.getAttribute("aria-controls"));
+    var open = cite.getAttribute("aria-expanded") === "true";
+    cite.setAttribute("aria-expanded", open ? "false" : "true");
+    if (box) box.hidden = open;
   });
 
-  filterBtns.forEach(function (x) { x.setAttribute("aria-pressed", x.classList.contains("is-active") ? "true" : "false"); });
+  // keyword cloud -> search the publication list
+  document.addEventListener("click", function (e) {
+    var kw = e.target.closest && e.target.closest(".js-kw");
+    if (!kw) return;
+    e.preventDefault();
+    var q = kw.getAttribute("data-q");
+    setFilter("all");
+    state.q = q; state.shown = PER_PAGE;
+    if (searchEl) searchEl.value = q;
+    render();
+    document.getElementById("publications").scrollIntoView({ behavior: "smooth" });
+  });
+
+  setFilter("all");
   updateCounts();
   render();
+
+  /* ---------------- generic "show more" toggles ---------------- */
+  document.querySelectorAll(".js-more").forEach(function (btn) {
+    var target = document.getElementById(btn.getAttribute("aria-controls"));
+    var label = btn.querySelector(".lbl");
+    var closedText = label ? label.textContent : "";
+    btn.addEventListener("click", function () {
+      var open = btn.getAttribute("aria-expanded") === "true";
+      btn.setAttribute("aria-expanded", open ? "false" : "true");
+      if (target) target.classList.toggle("is-collapsed", open);
+      if (label) label.textContent = open ? closedText : "Show fewer";
+    });
+  });
 
   /* ---------------- nav highlight ---------------- */
   var navLinks = document.querySelectorAll(".nav a");
@@ -325,7 +354,4 @@
     }, { rootMargin: "-45% 0px -50% 0px" });
     document.querySelectorAll("main .section[id]").forEach(function (s) { io.observe(s); });
   }
-
-  var yearEl = document.getElementById("year");
-  if (yearEl) yearEl.textContent = new Date().getFullYear();
 })();
